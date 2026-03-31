@@ -79,36 +79,37 @@
 .auth-panels {
   position: relative;
   display: flex;
-  gap: 16px;
+  gap: 0;
   width: 100%;
   min-height: 430px;
+  overflow: hidden;
+  border-radius: 24px;
 }
 
 .auth-panel {
-  flex: 1 1 calc(50% - 8px);
+  flex: 1 1 50%;
   min-width: 0;
-  border-radius: 18px;
-  border: 1px solid var(--auth-border);
+  border-radius: 0;
+  border: 0;
   background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
   transition: opacity 0.45s ease, transform 0.45s ease, filter 0.45s ease;
   overflow: hidden;
-  cursor: pointer;
 }
 
 .auth-overlay-panel {
   position: absolute;
-  inset: 0 0 0 auto;
-  width: calc(50% - 8px);
+  inset: 0 auto 0 0;
+  width: 50%;
   z-index: 5;
-  border-radius: 18px;
+  border-radius: 0 38px 38px 0;
   border: 1px solid #c7d2fe;
   background: linear-gradient(145deg, #4338ca 0%, #6366f1 55%, #818cf8 100%);
   color: #ffffff;
   box-shadow: 0 20px 44px rgba(67, 56, 202, 0.34);
   transform: translateX(0);
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease;
-  pointer-events: none;
-  opacity: 0;
+  transition: transform 0.5s ease-in-out, opacity 0.35s ease, border-radius 0.5s ease-in-out;
+  pointer-events: auto;
+  opacity: 1;
 }
 
 .auth-overlay-content {
@@ -147,6 +148,31 @@
   margin-top: 8px;
   font-size: 0.92rem;
   opacity: 0.82;
+}
+
+.auth-overlay-content small {
+  display: block;
+  margin-top: 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.overlay-toggle-btn {
+  margin-top: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  padding: 10px 20px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.overlay-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
 }
 
 .form-card {
@@ -268,17 +294,14 @@
   pointer-events: auto;
 }
 
-.auth-panels.show-login .auth-overlay-panel,
-.auth-panels.show-signup .auth-overlay-panel {
-  opacity: 1;
-}
-
 .auth-panels.show-login .auth-overlay-panel {
-  transform: translateX(0);
+  transform: translateX(100%);
+  border-radius: 38px 0 0 38px;
 }
 
 .auth-panels.show-signup .auth-overlay-panel {
-  transform: translateX(calc(-100% - 16px));
+  transform: translateX(0);
+  border-radius: 0 38px 38px 0;
 }
 
 .auth-panels.show-login .login-panel,
@@ -376,9 +399,10 @@
     position: static;
     width: 100%;
     min-height: 170px;
-    margin-top: 12px;
+    margin-top: 0;
     transform: none;
     opacity: 1;
+    border-radius: 0;
   }
 
   .auth-panels.show-login .signup-panel,

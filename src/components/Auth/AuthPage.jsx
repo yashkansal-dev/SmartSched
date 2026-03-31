@@ -70,44 +70,11 @@ const AuthPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card-shell">
-        <div className="auth-toggle" role="tablist" aria-label="Choose authentication mode">
-          <button
-            type="button"
-            className={activePanel === 'signup' ? 'is-active' : ''}
-            onClick={() => setActivePanel('signup')}
-          >
-            Signup
-          </button>
-          <button
-            type="button"
-            className={activePanel === 'login' ? 'is-active' : ''}
-            onClick={() => setActivePanel('login')}
-          >
-            Login
-          </button>
-        </div>
-
         {signupNotice && <p className="auth-notice">{signupNotice}</p>}
         {authError && <p className="auth-error">{authError}</p>}
 
         <div className={panelClassName}>
-          <section
-            className="auth-panel login-panel"
-            onClick={() => setActivePanel('login')}
-          >
-            <LoginForm
-              onSubmit={handleLogin}
-              onActivate={() => setActivePanel('login')}
-              isLoading={isLoading}
-              onGoogleSuccess={handleGoogleSuccess}
-              onGoogleError={() => setAuthError('Google sign-in failed.')}
-            />
-          </section>
-
-          <section
-            className="auth-panel signup-panel"
-            onClick={() => setActivePanel('signup')}
-          >
+          <section className="auth-panel signup-panel">
             <SignupForm
               onSubmit={handleSignupStepOne}
               onActivate={() => setActivePanel('signup')}
@@ -117,12 +84,30 @@ const AuthPage = () => {
             />
           </section>
 
-          <aside className="auth-overlay-panel" aria-hidden="true">
+          <section className="auth-panel login-panel">
+            <LoginForm
+              onSubmit={handleLogin}
+              onActivate={() => setActivePanel('login')}
+              isLoading={isLoading}
+              onGoogleSuccess={handleGoogleSuccess}
+              onGoogleError={() => setAuthError('Google sign-in failed.')}
+            />
+          </section>
+
+          <aside className="auth-overlay-panel">
             <div className="auth-overlay-content">
               <img src="/logo.png" alt="" className="auth-overlay-logo" />
               <h3>SmartSched</h3>
               <p>AI-powered academic scheduling made elegant.</p>
               <span>Plan smarter. Publish faster.</span>
+              <small>{activePanel === 'login' ? 'Hello, Friend!' : 'Welcome Back!'}</small>
+              <button
+                type="button"
+                className="overlay-toggle-btn"
+                onClick={() => setActivePanel(activePanel === 'login' ? 'signup' : 'login')}
+              >
+                {activePanel === 'login' ? 'SIGN UP' : 'SIGN IN'}
+              </button>
             </div>
           </aside>
         </div>
