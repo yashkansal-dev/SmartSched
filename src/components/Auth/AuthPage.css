@@ -102,13 +102,13 @@
   width: 50%;
   z-index: 5;
   border-radius: 0 38px 38px 0;
-  border: 1px solid #c7d2fe;
+  border: 0;
   background: linear-gradient(145deg, #4338ca 0%, #6366f1 55%, #818cf8 100%);
   color: #ffffff;
-  box-shadow: 0 20px 44px rgba(67, 56, 202, 0.34);
+  box-shadow: none;
   transform: translateX(0);
-  transition: transform 0.5s ease-in-out, opacity 0.35s ease, border-radius 0.5s ease-in-out;
-  pointer-events: auto;
+  transition: transform 0.5s ease-in-out, border-radius 0.5s ease-in-out;
+  pointer-events: none;
   opacity: 1;
 }
 
@@ -271,26 +271,26 @@
 }
 
 .auth-panels.show-login .signup-panel {
-  opacity: 0.45;
-  transform: scale(0.98);
-  pointer-events: none;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
 .auth-panels.show-login .login-panel {
   opacity: 1;
-  transform: translateX(0) scale(1);
+  transform: none;
   pointer-events: auto;
 }
 
 .auth-panels.show-signup .login-panel {
-  opacity: 0.45;
-  transform: scale(0.98);
-  pointer-events: none;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
 .auth-panels.show-signup .signup-panel {
   opacity: 1;
-  transform: translateX(0) scale(1);
+  transform: none;
   pointer-events: auto;
 }
 
@@ -302,11 +302,6 @@
 .auth-panels.show-signup .auth-overlay-panel {
   transform: translateX(0);
   border-radius: 0 38px 38px 0;
-}
-
-.auth-panels.show-login .login-panel,
-.auth-panels.show-signup .signup-panel {
-  filter: drop-shadow(0 8px 20px rgba(15, 23, 42, 0.08));
 }
 
 .role-modal-backdrop {
@@ -407,7 +402,7 @@
 
   .auth-panels.show-login .signup-panel,
   .auth-panels.show-signup .login-panel {
-    opacity: 0.55;
-    transform: scale(0.99);
+    opacity: 1;
+    transform: none;
   }
 }
