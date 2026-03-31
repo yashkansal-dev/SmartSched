@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
 
-const LoginForm = ({ onSubmit, onActivate, isLoading }) => {
+const LoginForm = ({ onSubmit, onActivate, isLoading, onGoogleSuccess, onGoogleError }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -44,6 +45,18 @@ const LoginForm = ({ onSubmit, onActivate, isLoading }) => {
         <button className="primary-btn" type="submit" disabled={isLoading}>
           {isLoading ? 'Signing in...' : 'Login'}
         </button>
+
+        <div className="form-google">
+          <GoogleLogin
+            onSuccess={onGoogleSuccess}
+            onError={onGoogleError}
+            theme="outline"
+            size="large"
+            shape="pill"
+            text="continue_with"
+            width="100%"
+          />
+        </div>
       </form>
     </div>
   );

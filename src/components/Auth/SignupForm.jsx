@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
 
-const SignupForm = ({ onSubmit, onActivate, disabled }) => {
+const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleError }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,6 +58,18 @@ const SignupForm = ({ onSubmit, onActivate, disabled }) => {
         <button className="primary-btn" type="submit" disabled={disabled}>
           Continue
         </button>
+
+        <div className="form-google">
+          <GoogleLogin
+            onSuccess={onGoogleSuccess}
+            onError={onGoogleError}
+            theme="outline"
+            size="large"
+            shape="pill"
+            text="continue_with"
+            width="100%"
+          />
+        </div>
       </form>
     </div>
   );

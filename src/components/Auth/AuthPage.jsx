@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../contexts/AuthContext';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
@@ -9,7 +8,7 @@ import './AuthPage.css';
 const AuthPage = () => {
   const { login, googleLogin } = useAuth();
 
-  const [activePanel, setActivePanel] = useState('none');
+  const [activePanel, setActivePanel] = useState('login');
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
   const [signupDraft, setSignupDraft] = useState(null);
@@ -71,14 +70,6 @@ const AuthPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card-shell">
-        <div className="auth-brand-row">
-          <img src="/logo.png" alt="SmartSched logo" className="auth-logo" />
-          <div>
-            <h1>SmartSched</h1>
-            <p>AI-powered academic scheduling made elegant.</p>
-          </div>
-        </div>
-
         <div className="auth-toggle" role="tablist" aria-label="Choose authentication mode">
           <button
             type="button"
@@ -108,6 +99,8 @@ const AuthPage = () => {
               onSubmit={handleSignupStepOne}
               onActivate={() => setActivePanel('signup')}
               disabled={isLoading}
+              onGoogleSuccess={handleGoogleSuccess}
+              onGoogleError={() => setAuthError('Google sign-in failed.')}
             />
           </section>
 
@@ -119,6 +112,8 @@ const AuthPage = () => {
               onSubmit={handleLogin}
               onActivate={() => setActivePanel('login')}
               isLoading={isLoading}
+              onGoogleSuccess={handleGoogleSuccess}
+              onGoogleError={() => setAuthError('Google sign-in failed.')}
             />
           </section>
 
@@ -130,11 +125,6 @@ const AuthPage = () => {
             </div>
           </aside>
         </div>
-
-        <footer className="auth-footer-google">
-          <p>or continue with</p>
-          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => setAuthError('Google sign-in failed.')} />
-        </footer>
       </div>
 
       <RoleModal
