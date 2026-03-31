@@ -1,11 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
+import api from '../services/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  accessToken: string | null;
+  loading: boolean;
+  googleLogin: (token: string) => Promise<void>;
   logout: () => void;
   switchRole: (role: UserRole) => void;
+  login: (email: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,17 +24,43 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user session
+    // Check for stored tokens and restore session
+    const storedAccessToken = localStorage.getItem('access_token');
     const storedUser = localStorage.getItem('smartsched_user');
-    if (storedUser) {
+    
+    if (storedAccessToken && storedUser) {
+      setAccessToken(storedAccessToken);
       setUser(JSON.parse(storedUser));
     }
+    setLoading(false);
   }, []);
 
+  const googleLogin = async (token: string) => {
+    try {
+      const response = await api.googleAuth(token);
+      const { access, refresh, user: userData } = response.data;
+      
+      // Store tokens
+      localStorage.setItem('access_token', access);
+      localStorage.setItem('refresh_token', refresh);
+      localStorage.setItem('smartsched_user', JSON.stringify(userData));
+      
+      setAccessToken(access);
+      setUser(userData);
+    } catch (error) {
+      console.error('Google login failed:', error);
+      throw error;
+    }
+  };
+
+  // Keep mock login for demo purposes
   const login = async (email: string, password: string) => {
-    // Mock login - determine role based on email
+    // In production, this would call a real login endpoint
+    // For now, we'll use it for demo credentials
     let role: UserRole = 'faculty';
     let name = 'User';
     let department = 'General';
@@ -70,12 +100,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       phone: '+1-555-0123'
     };
     
-    setUser(mockUser);
     localStorage.setItem('smartsched_user', JSON.stringify(mockUser));
+    setUser(mockUser);
   };
 
   const logout = () => {
     setUser(null);
+    setAccessToken(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('smartsched_user');
   };
 
@@ -88,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, switchRole }}>
+    <AuthContext.Provider value={{ user, accessToken, loading, googleLogin, logout, switchRole, login }}>
       {children}
     </AuthContext.Provider>
   );

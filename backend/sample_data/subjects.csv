@@ -1,0 +1,11 @@
+name,code,subject_type,hours_per_week,faculty_email
+Database Management,CS301,theory,4,sarah.johnson@university.edu
+Computer Networks,CS302,theory,4,michael.chen@university.edu
+Web Development,IT401,lab,6,emily.davis@university.edu
+Data Structures,CS201,theory,4,david.wilson@university.edu
+Software Engineering,CS401,lab,6,lisa.zhang@university.edu
+Artificial Intelligence,CS501,theory,3,sarah.johnson@university.edu
+Operating Systems,CS303,theory,4,james.brown@university.edu
+Web Security,IT402,lab,4,amanda.miller@university.edu
+Discrete Mathematics,MATH301,theory,3,robert.taylor@university.edu
+Advanced Algorithms,CS501,theory,3,michael.chen@university.edu
