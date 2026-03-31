@@ -81,9 +81,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => 
     <div className="w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-            <GraduationCap className="w-6 h-6 text-white" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="SmartSched logo"
+            className="w-10 h-10 rounded-lg object-contain"
+          />
           <div>
             <h1 className="text-xl font-bold text-gray-900">SmartSched</h1>
             <p className="text-sm text-gray-500">AI Scheduler</p>

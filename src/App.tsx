@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Login from './components/Auth/Login';
+import AuthPage from './components/Auth/AuthPage';
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -18,7 +18,7 @@ const AppContent: React.FC = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
 
   if (!user) {
-    return <Login />;
+    return <AuthPage />;
   }
 
   const renderContent = () => {
