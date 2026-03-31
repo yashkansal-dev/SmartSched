@@ -92,19 +92,6 @@ const AuthPage = () => {
 
         <div className={panelClassName}>
           <section
-            className="auth-panel signup-panel"
-            onClick={() => setActivePanel('signup')}
-          >
-            <SignupForm
-              onSubmit={handleSignupStepOne}
-              onActivate={() => setActivePanel('signup')}
-              disabled={isLoading}
-              onGoogleSuccess={handleGoogleSuccess}
-              onGoogleError={() => setAuthError('Google sign-in failed.')}
-            />
-          </section>
-
-          <section
             className="auth-panel login-panel"
             onClick={() => setActivePanel('login')}
           >
@@ -117,11 +104,25 @@ const AuthPage = () => {
             />
           </section>
 
+          <section
+            className="auth-panel signup-panel"
+            onClick={() => setActivePanel('signup')}
+          >
+            <SignupForm
+              onSubmit={handleSignupStepOne}
+              onActivate={() => setActivePanel('signup')}
+              disabled={isLoading}
+              onGoogleSuccess={handleGoogleSuccess}
+              onGoogleError={() => setAuthError('Google sign-in failed.')}
+            />
+          </section>
+
           <aside className="auth-overlay-panel" aria-hidden="true">
             <div className="auth-overlay-content">
               <img src="/logo.png" alt="" className="auth-overlay-logo" />
               <h3>SmartSched</h3>
-              <p>Plan smarter. Publish faster.</p>
+              <p>AI-powered academic scheduling made elegant.</p>
+              <span>Plan smarter. Publish faster.</span>
             </div>
           </aside>
         </div>

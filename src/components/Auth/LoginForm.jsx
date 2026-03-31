@@ -43,7 +43,7 @@ const LoginForm = ({ onSubmit, onActivate, isLoading, onGoogleSuccess, onGoogleE
         </label>
 
         <button className="primary-btn" type="submit" disabled={isLoading}>
-          {isLoading ? 'Signing in...' : 'Login'}
+          {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
 
         <div className="form-google">

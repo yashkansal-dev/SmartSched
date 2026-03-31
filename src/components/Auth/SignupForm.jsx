@@ -56,7 +56,7 @@ const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleE
         </label>
 
         <button className="primary-btn" type="submit" disabled={disabled}>
-          Continue
+          Sign Up
         </button>
 
         <div className="form-google">
