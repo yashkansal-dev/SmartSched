@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
@@ -8,18 +8,18 @@ import './AuthPage.css';
 const AuthPage = () => {
   const { login, googleLogin } = useAuth();
 
-  const [activePanel, setActivePanel] = useState('login');
+  const [activePanel, setActivePanel] = useState('signup');
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
   const [signupDraft, setSignupDraft] = useState(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [signupNotice, setSignupNotice] = useState('');
 
-  const panelClassName = useMemo(() => {
-    if (activePanel === 'login') return 'auth-panels show-login';
-    if (activePanel === 'signup') return 'auth-panels show-signup';
-    return 'auth-panels';
-  }, [activePanel]);
+  const isSignup = activePanel === 'signup';
+  const panelHeading = isSignup ? 'Welcome Back!' : 'Hello, new to SmartSched?';
+  const panelMessage = isSignup
+    ? 'Sign in to continue managing schedules smarter, publishing faster, and keeping your campus on track.'
+    : 'Create your account and get AI-powered timetables, conflict-free scheduling, and faster academic planning.';
 
   const handleLogin = async ({ email, password }) => {
     setIsLoading(true);
@@ -73,43 +73,39 @@ const AuthPage = () => {
         {signupNotice && <p className="auth-notice">{signupNotice}</p>}
         {authError && <p className="auth-error">{authError}</p>}
 
-        <div className={panelClassName}>
-          <section className="auth-panel signup-panel">
-            <SignupForm
-              onSubmit={handleSignupStepOne}
-              onActivate={() => setActivePanel('signup')}
-              disabled={isLoading}
-              onGoogleSuccess={handleGoogleSuccess}
-              onGoogleError={() => setAuthError('Google sign-in failed.')}
-            />
-          </section>
-
-          <section className="auth-panel login-panel">
-            <LoginForm
-              onSubmit={handleLogin}
-              onActivate={() => setActivePanel('login')}
-              isLoading={isLoading}
-              onGoogleSuccess={handleGoogleSuccess}
-              onGoogleError={() => setAuthError('Google sign-in failed.')}
-            />
-          </section>
-
-          <aside className="auth-overlay-panel">
-            <div className="auth-overlay-content">
-              <img src="/logo.png" alt="" className="auth-overlay-logo" />
-              <h3>SmartSched</h3>
-              <p>AI-powered academic scheduling made elegant.</p>
-              <span>Plan smarter. Publish faster.</span>
-              <small>{activePanel === 'login' ? 'Hello, Friend!' : 'Welcome Back!'}</small>
+        <div className={`auth-split-card ${isSignup ? '' : 'panel-right'}`}>
+          <aside className="auth-welcome-panel">
+            <div className="auth-welcome-content">
+              <img src="/logo.png" alt="SmartSched logo" className="auth-overlay-logo" />
+              <h3>{panelHeading}</h3>
+              <p>{panelMessage}</p>
               <button
                 type="button"
                 className="overlay-toggle-btn"
-                onClick={() => setActivePanel(activePanel === 'login' ? 'signup' : 'login')}
+                onClick={() => setActivePanel(isSignup ? 'login' : 'signup')}
               >
-                {activePanel === 'login' ? 'SIGN UP' : 'SIGN IN'}
+                {isSignup ? 'SIGN IN' : 'SIGN UP'}
               </button>
             </div>
           </aside>
+
+          <section className="auth-form-panel">
+            {isSignup ? (
+              <SignupForm
+                onSubmit={handleSignupStepOne}
+                disabled={isLoading}
+                onGoogleSuccess={handleGoogleSuccess}
+                onGoogleError={() => setAuthError('Google sign-in failed.')}
+              />
+            ) : (
+              <LoginForm
+                onSubmit={handleLogin}
+                isLoading={isLoading}
+                onGoogleSuccess={handleGoogleSuccess}
+                onGoogleError={() => setAuthError('Google sign-in failed.')}
+              />
+            )}
+          </section>
         </div>
       </div>
 

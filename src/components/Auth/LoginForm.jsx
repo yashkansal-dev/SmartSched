@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 
-const LoginForm = ({ onSubmit, onActivate, isLoading, onGoogleSuccess, onGoogleError }) => {
+const LoginForm = ({ onSubmit, isLoading, onGoogleSuccess, onGoogleError }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -13,8 +13,8 @@ const LoginForm = ({ onSubmit, onActivate, isLoading, onGoogleSuccess, onGoogleE
   return (
     <div className="form-card">
       <div className="form-heading">
-        <h2>Welcome back</h2>
-        <p>Sign in to continue managing your schedule.</p>
+        <h2>Sign In</h2>
+        <p>Use your account credentials to continue.</p>
       </div>
 
       <form className="auth-form" onSubmit={handleSubmit}>
@@ -23,7 +23,6 @@ const LoginForm = ({ onSubmit, onActivate, isLoading, onGoogleSuccess, onGoogleE
           <input
             type="email"
             value={email}
-            onFocus={onActivate}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@campus.edu"
             required
@@ -35,7 +34,6 @@ const LoginForm = ({ onSubmit, onActivate, isLoading, onGoogleSuccess, onGoogleE
           <input
             type="password"
             value={password}
-            onFocus={onActivate}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="••••••••"
             required
@@ -45,6 +43,8 @@ const LoginForm = ({ onSubmit, onActivate, isLoading, onGoogleSuccess, onGoogleE
         <button className="primary-btn" type="submit" disabled={isLoading}>
           {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
+
+        <p className="auth-form-separator">or continue with Google</p>
 
         <div className="form-google">
           <GoogleLogin

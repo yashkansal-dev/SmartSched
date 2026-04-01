@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 
-const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleError }) => {
+const SignupForm = ({ onSubmit, disabled, onGoogleSuccess, onGoogleError }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,8 +14,8 @@ const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleE
   return (
     <div className="form-card">
       <div className="form-heading">
-        <h2>Create account</h2>
-        <p>Start with basic details, then pick your role.</p>
+        <h2>Create Account</h2>
+        <p>Register with Google or your email.</p>
       </div>
 
       <form className="auth-form" onSubmit={handleSubmit}>
@@ -24,7 +24,6 @@ const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleE
           <input
             type="text"
             value={name}
-            onFocus={onActivate}
             onChange={(event) => setName(event.target.value)}
             placeholder="Jane Doe"
             required
@@ -36,7 +35,6 @@ const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleE
           <input
             type="email"
             value={email}
-            onFocus={onActivate}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="jane@campus.edu"
             required
@@ -48,7 +46,6 @@ const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleE
           <input
             type="password"
             value={password}
-            onFocus={onActivate}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Create a strong password"
             required
@@ -58,6 +55,8 @@ const SignupForm = ({ onSubmit, onActivate, disabled, onGoogleSuccess, onGoogleE
         <button className="primary-btn" type="submit" disabled={disabled}>
           Sign Up
         </button>
+
+        <p className="auth-form-separator">or continue with Google</p>
 
         <div className="form-google">
           <GoogleLogin
