@@ -4,6 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
 
 class APIClient {
   private client: AxiosInstance;
+  private refreshPromise: Promise<string> | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -25,21 +26,86 @@ class APIClient {
     // Add response interceptor to handle errors
     this.client.interceptors.response.use(
       (response) => response,
-      (error: AxiosError) => {
-        if (error.response?.status === 401) {
-          // Token expired or invalid
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          window.location.href = '/login';
+      async (error: AxiosError) => {
+        const status = error.response?.status;
+        const originalRequest = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
+
+        if (status === 401 && originalRequest && !originalRequest._retry) {
+          const requestUrl = originalRequest.url || '';
+          const isAuthEndpoint =
+            requestUrl.includes('/auth/login/') ||
+            requestUrl.includes('/auth/refresh/') ||
+            requestUrl.includes('/auth/google/');
+
+          if (!isAuthEndpoint) {
+            originalRequest._retry = true;
+
+            try {
+              const newAccessToken = await this.refreshAccessToken();
+              originalRequest.headers = originalRequest.headers || {};
+              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+              return this.client(originalRequest);
+            } catch (refreshError) {
+              this.handleAuthFailure();
+              return Promise.reject(refreshError);
+            }
+          }
         }
+
+        if (status === 401) {
+          this.handleAuthFailure();
+        }
+
         return Promise.reject(error);
       }
     );
   }
 
+  private handleAuthFailure() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('smartsched_user');
+    window.location.href = '/';
+  }
+
+  private async refreshAccessToken(): Promise<string> {
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      throw new Error('Refresh token missing');
+    }
+
+    this.refreshPromise = axios
+      .post(`${API_BASE_URL}/auth/refresh/`, { refresh: refreshToken })
+      .then((response) => {
+        const { access, refresh } = response.data as { access: string; refresh?: string };
+        localStorage.setItem('access_token', access);
+        if (refresh) {
+          localStorage.setItem('refresh_token', refresh);
+        }
+        return access;
+      })
+      .finally(() => {
+        this.refreshPromise = null;
+      });
+
+    return this.refreshPromise;
+  }
+
   // Auth endpoints
+  async credentialLogin(email: string, password: string) {
+    return this.client.post('/auth/login/', { email, password });
+  }
+
   async googleAuth(token: string) {
     return this.client.post('/auth/google/', { token });
+  }
+
+  async getConnectionStatus() {
+    return this.client.get('/auth/connection-status/');
   }
 
   async refreshToken(refreshToken: string) {

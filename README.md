@@ -1,87 +1,79 @@
-#  SmartSched– AI Based Timetable Management System
+# SmartSched
 
-SmartSched is a full-stack academic scheduling platform built for universities. It uses Python-based ML models to automate conflict-free course timetabling and provides role-based access to students, instructors, and admins.
+SmartSched is a full-stack academic scheduling platform with role-based access for coordinators, faculty, students, exam in-charge, HOD, and principal.
 
----
+## Tech Stack
 
-##  Features
+- **Frontend:** React + TypeScript + Vite
+- **Backend:** Django + Django REST Framework
+- **Auth:** JWT (SimpleJWT) + optional Google OAuth
+- **Database:** PostgreSQL (local or hosted, e.g. Neon)
 
-- **AI-Based Timetable Generation**
-  - Automatically resolves scheduling conflicts using ML
-  - Optimizes classroom and instructor allocation
+## Monorepo Structure
 
-- **Role-Based Access Control**
-  - **Admin**: Create and manage courses, faculty, and classrooms
-  - **Faculty**: View personal schedules and assigned classes
-  - **Student**: Access semester-wise class timetables
+- `src/` → frontend app
+- `backend/` → Django API + scheduling modules
 
-- **Smart Resource Allocation**
-  - Dynamic classroom & lab assignment based on availability
-  - Generates detailed scheduling reports
+## Quick Start
 
-- **Web Portal**
-  - Intuitive frontend built in React.js
-  - Backend services via Spring Boot REST API
-  - ML scheduling engine in Python
+### 1) Frontend
 
----
+1. Copy environment template:
+   - `cp .env.example .env`
+2. Install and run:
+   - `npm install`
+   - `npm run dev`
 
-##  Tech Stack
+Frontend default URL: `http://localhost:5173`
 
-| Layer      | Technology          |
-|------------|---------------------|
-| Frontend   | React.js            |
-| Backend    | Spring Boot (Java)  |
-| Scheduler  | Python (ML models)  |
-| Database   | MySQL / PostgreSQL  |
-| Auth       | Spring Security (RBAC) |
+### 2) Backend
 
----
+1. Go to backend:
+   - `cd backend`
+2. Create/activate venv and install dependencies:
+   - `python3 -m venv venv`
+   - `source venv/bin/activate`
+   - `pip install -r requirements.txt`
+3. Copy backend env template:
+   - `cp .env.example .env`
+4. Update DB config in `backend/.env` (`DATABASE_URL` or `DB_*` values)
+5. Run migrations and seed:
+   - `python manage.py migrate`
+   - `python manage.py seed_data`
+   - `python manage.py seed_demo_users`
+6. Start API server:
+   - `python manage.py runserver`
 
-##  Installation
+Backend default URL: `http://localhost:8000`
 
-### Prerequisites:
-- Node.js, Java 17+, Python 3.8+, MySQL
+## Demo Credentials (Seeded)
 
-### 1. Clone the repo:
-```bash
-git clone https://github.com/yourusername/smartsched.git
-cd smartsched
-````
+Password for all demo users: `demo123` (or `DEMO_DEFAULT_PASSWORD` from backend `.env`)
 
-### 2. Start Backend:
+- `coordinator@smartsched.edu` → `tt_coordinator`
+- `faculty@smartsched.edu` → `faculty`
+- `student@smartsched.edu` → `student`
+- `examiner@smartsched.edu` → `exam_incharge`
+- `hod@smartsched.edu` → `hod`
+- `principal@smartsched.edu` → `principal`
 
-```bash
-cd backend
-./mvnw spring-boot:run
-```
+## API Highlights
 
-### 3. Start Frontend:
+- `POST /api/auth/login/` → credential login (email/password)
+- `POST /api/auth/google/` → Google login (optional)
+- `POST /api/auth/refresh/` → refresh JWT
+- `GET /api/auth/users/me/` → current profile
+- `GET /api/auth/connection-status/` → backend + DB status (management roles)
 
-```bash
-cd frontend
-npm install
-npm start
-```
+## Security Notes
 
-### 4. ML Scheduler (Python):
+- Do **not** commit real credentials in `.env`.
+- Use `.env.example` as template and keep real secrets in local env or deployment secrets manager.
+- Backend now enforces role-based permissions for sensitive endpoints.
 
-```bash
-cd scheduler
-pip install -r requirements.txt
-python scheduler.py
-```
+## Current Status
 
----
-
-##  Project Highlights
-
-* Led development of the web interface and backend logic
-* Integrated ML-based scheduler with course data and constraints
-* Deployed on Netlify (frontend) and Render/AWS (backend)
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Frontend ↔ backend JWT auth integrated
+- Role-based demo users seeded
+- RBAC enforced server-side for sensitive management actions
+- Automatic frontend token refresh on 401

@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../contexts/AuthContext';
-import { UserRole } from '../../types';
+import { DEMO_CREDENTIALS, isGoogleOAuthConfigured } from '../../utils/auth';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<UserRole>('tt_coordinator');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { login, googleLogin } = useAuth();
+  const showGoogleLogin = isGoogleOAuthConfigured(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,15 +40,6 @@ const Login: React.FC = () => {
     }
   };
 
-  const demoCredentials = [
-    { role: 'tt_coordinator', email: 'coordinator@smartsched.edu', label: 'TT Coordinator' },
-    { role: 'faculty', email: 'faculty@smartsched.edu', label: 'Faculty' },
-    { role: 'student', email: 'student@smartsched.edu', label: 'Student' },
-    { role: 'exam_incharge', email: 'examiner@smartsched.edu', label: 'Exam In-Charge' },
-    { role: 'hod', email: 'hod@smartsched.edu', label: 'HOD' },
-    { role: 'principal', email: 'principal@smartsched.edu', label: 'Principal' }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -73,20 +64,24 @@ const Login: React.FC = () => {
 
           {/* Google Login Button */}
           <div className="mb-6">
-            <div className="flex justify-center">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setError('Google login failed')}
-              />
-            </div>
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or use demo credentials</span>
-              </div>
-            </div>
+            {showGoogleLogin ? (
+              <>
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => setError('Google login failed')}
+                  />
+                </div>
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-gray-500">Or use demo credentials</span>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -144,13 +139,12 @@ const Login: React.FC = () => {
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm font-medium text-gray-700 mb-3">Demo Credentials:</p>
             <div className="grid grid-cols-1 gap-2">
-              {demoCredentials.map((cred) => (
+              {DEMO_CREDENTIALS.map((cred) => (
                 <button
                   key={cred.role}
                   onClick={() => {
                     setEmail(cred.email);
                     setPassword('demo123');
-                    setSelectedRole(cred.role as UserRole);
                   }}
                   className="text-left p-2 text-sm bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
                 >

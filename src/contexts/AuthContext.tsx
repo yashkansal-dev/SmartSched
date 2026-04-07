@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
 import api from '../services/api';
+import { BackendUser, mapBackendUser } from '../utils/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -28,80 +29,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored tokens and restore session
+    // Validate stored token with backend and restore the profile.
     const storedAccessToken = localStorage.getItem('access_token');
-    const storedUser = localStorage.getItem('smartsched_user');
-    
-    if (storedAccessToken && storedUser) {
-      setAccessToken(storedAccessToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const restoreSession = async () => {
+      if (!storedAccessToken) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await api.getUserProfile();
+        const mappedUser = mapBackendUser(response.data as BackendUser);
+
+        setAccessToken(storedAccessToken);
+        setUser(mappedUser);
+        localStorage.setItem('smartsched_user', JSON.stringify(mappedUser));
+      } catch (error) {
+        console.error('Session validation failed:', error);
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('smartsched_user');
+        setAccessToken(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
   }, []);
 
   const googleLogin = async (token: string) => {
     try {
       const response = await api.googleAuth(token);
       const { access, refresh, user: userData } = response.data;
+      const mappedUser = mapBackendUser(userData as BackendUser);
       
       // Store tokens
       localStorage.setItem('access_token', access);
       localStorage.setItem('refresh_token', refresh);
-      localStorage.setItem('smartsched_user', JSON.stringify(userData));
+      localStorage.setItem('smartsched_user', JSON.stringify(mappedUser));
       
       setAccessToken(access);
-      setUser(userData);
+      setUser(mappedUser);
     } catch (error) {
       console.error('Google login failed:', error);
       throw error;
     }
   };
 
-  // Keep mock login for demo purposes
   const login = async (email: string, password: string) => {
-    // In production, this would call a real login endpoint
-    // For now, we'll use it for demo credentials
-    let role: UserRole = 'faculty';
-    let name = 'User';
-    let department = 'General';
+    const response = await api.credentialLogin(email, password);
+    const { access, refresh, user: userData } = response.data;
+    const mappedUser = mapBackendUser(userData as BackendUser);
 
-    if (email.includes('coordinator')) {
-      role = 'tt_coordinator';
-      name = 'Dr. Sarah Johnson';
-      department = 'Computer Science';
-    } else if (email.includes('faculty')) {
-      role = 'faculty';
-      name = 'Prof. Michael Chen';
-      department = 'Computer Science';
-    } else if (email.includes('student')) {
-      role = 'student';
-      name = 'John Smith';
-      department = 'Computer Science';
-    } else if (email.includes('examiner')) {
-      role = 'exam_incharge';
-      name = 'Dr. Emily Davis';
-      department = 'Computer Science';
-    } else if (email.includes('hod')) {
-      role = 'hod';
-      name = 'Prof. David Wilson';
-      department = 'Computer Science';
-    } else if (email.includes('principal')) {
-      role = 'principal';
-      name = 'Dr. Lisa Zhang';
-      department = 'Administration';
-    }
+    localStorage.setItem('access_token', access);
+    localStorage.setItem('refresh_token', refresh);
+    localStorage.setItem('smartsched_user', JSON.stringify(mappedUser));
 
-    const mockUser: User = {
-      id: Date.now().toString(),
-      name,
-      email,
-      role,
-      department,
-      phone: '+1-555-0123'
-    };
-    
-    localStorage.setItem('smartsched_user', JSON.stringify(mockUser));
-    setUser(mockUser);
+    setAccessToken(access);
+    setUser(mappedUser);
   };
 
   const logout = () => {

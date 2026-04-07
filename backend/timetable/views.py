@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.http import FileResponse
+from accounts.permissions import RoleBasedAccessPermission, MANAGEMENT_ROLES
 from .models import Faculty, Subject, Section, Timetable
 from .serializers import (
     FacultySerializer, SubjectSerializer, SectionSerializer, 
@@ -17,7 +18,8 @@ class FacultyViewSet(viewsets.ModelViewSet):
     """Faculty management"""
     queryset = Faculty.objects.all()
     serializer_class = FacultySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, RoleBasedAccessPermission]
+    allowed_roles = MANAGEMENT_ROLES
     search_fields = ['name', 'email', 'department']
     ordering_fields = ['name', 'created_at']
 
@@ -25,7 +27,8 @@ class SubjectViewSet(viewsets.ModelViewSet):
     """Subject management"""
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, RoleBasedAccessPermission]
+    allowed_roles = MANAGEMENT_ROLES
     search_fields = ['name', 'code']
     ordering_fields = ['code', 'name', 'created_at']
 
@@ -33,7 +36,8 @@ class SectionViewSet(viewsets.ModelViewSet):
     """Section management"""
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, RoleBasedAccessPermission]
+    allowed_roles = MANAGEMENT_ROLES
     search_fields = ['name']
     ordering_fields = ['name', 'semester', 'created_at']
 
@@ -41,7 +45,14 @@ class TimetableViewSet(viewsets.ModelViewSet):
     """Timetable management"""
     queryset = Timetable.objects.all()
     serializer_class = TimetableSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, RoleBasedAccessPermission]
+    allowed_roles_by_action = {
+        'create': MANAGEMENT_ROLES,
+        'update': MANAGEMENT_ROLES,
+        'partial_update': MANAGEMENT_ROLES,
+        'destroy': MANAGEMENT_ROLES,
+        'generate': MANAGEMENT_ROLES,
+    }
     search_fields = ['section__name', 'subject__code', 'faculty__name']
     ordering_fields = ['day', 'time_slot', 'created_at']
     

@@ -24,10 +24,11 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env
-# Edit .env with your Neon PostgreSQL URL
+# Edit .env with either DATABASE_URL or DB_* values
 
 python manage.py migrate
 python manage.py seed_data
+python manage.py seed_demo_users
 python manage.py runserver
 ```
 Backend runs at: `http://localhost:8000`
@@ -45,9 +46,10 @@ npm install
 ```
 
 #### 1.2 Update Environment Variables
-Edit `./env`:
+Copy `.env.example` to `.env`, then edit `.env`:
 ```env
 VITE_API_BASE_URL=http://localhost:8000/api
+# Optional unless you use Google sign-in
 VITE_GOOGLE_CLIENT_ID=your-google-client-id
 ```
 
@@ -76,7 +78,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 
 #### 2.2 Install Dependencies
 ```bash
-pip install-r requirements.txt
+pip install -r requirements.txt
 ```
 
 Packages installed:
@@ -125,11 +127,15 @@ SECRET_KEY=your-secret-key-here
 ALLOWED_HOSTS=localhost,127.0.0.1,localhost:8000
 
 # Database
+# Use DATABASE_URL or DB_* values
 DATABASE_URL=postgresql://...
 
 # Google OAuth
 VITE_GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_OAUTH_CLIENT_SECRET=your-google-secret
+
+# Demo users
+DEMO_DEFAULT_PASSWORD=demo123
 
 # CORS
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
@@ -149,12 +155,16 @@ This creates all database tables.
 #### 2.6 Seed Sample Data
 ```bash
 python manage.py seed_data
+python manage.py seed_demo_users
 ```
 
 Creates:
 - 5 faculties
 - 6 subjects  
 - 3 sections
+- 6 demo users (one for each role)
+
+Demo credentials use the password `demo123` by default.
 
 #### 2.7 Create Superuser (Optional)
 ```bash
@@ -173,17 +183,31 @@ Admin panel: `http://localhost:8000/admin/`
 
 ## Feature Integration Testing
 
-### 1. Test Google OAuth
+### 1. Test Demo Login / Google OAuth
 Frontend:
 1. Go to http://localhost:5173
-2. Click "Sign in with Google"
-3. Select Google account
-4. Should redirect to dashboard
+2. Use a demo credential button or sign in manually with:
+   - `coordinator@smartsched.edu`
+   - `faculty@smartsched.edu`
+   - `student@smartsched.edu`
+   - `examiner@smartsched.edu`
+   - `hod@smartsched.edu`
+   - `principal@smartsched.edu`
+3. Password for all demo users: `demo123`
+4. Should redirect to the dashboard for the selected role
 
 Backend verification:
 ```bash
-curl -X GET http://localhost:8000/api/auth/users/me/ \\
-  -H "Authorization: Bearer <access-token>"
+curl -X POST http://localhost:8000/api/auth/login/ \\
+  -H "Content-Type: application/json" \\
+  -d '{"email":"faculty@smartsched.edu","password":"demo123"}'
+```
+
+Optional Google OAuth (if configured):
+```bash
+curl -X POST http://localhost:8000/api/auth/google/ \\
+  -H "Content-Type: application/json" \\
+  -d '{"token":"<google_id_token>"}'
 ```
 
 ### 2. Test CSV Import
@@ -335,7 +359,7 @@ Check:
 ### Issue: Google OAuth Not Working
 Check:
 1. `VITE_GOOGLE_CLIENT_ID` in frontend `.env`
-2. `VITE_GOOGLE_CLIENT_ID` in backend `.env`
+2. `VITE_GOOGLE_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` in backend `.env`
 3. Redirect URI registered in Google Cloud Console
 4. Restart both servers
 

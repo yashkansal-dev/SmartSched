@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from accounts.permissions import MANAGEMENT_ROLES, user_has_role
 from .serializers import CSVUploadSerializer
 from .models import CSVUpload
 from .utils import CSVParser
@@ -19,6 +20,12 @@ def upload_csv(request):
     }
     """
     serializer = CSVUploadSerializer(data=request.data)
+
+    if not user_has_role(request.user, MANAGEMENT_ROLES):
+        return Response(
+            {'error': 'You do not have permission to upload CSV data.'},
+            status=status.HTTP_403_FORBIDDEN,
+        )
     
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

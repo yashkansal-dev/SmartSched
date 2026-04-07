@@ -9,6 +9,7 @@
     "dev:backend": "cd backend && if [ -x venv/bin/python3 ]; then venv/bin/python3 manage.py runserver 127.0.0.1:8000; else python3 manage.py runserver 127.0.0.1:8000; fi",
     "build": "vite build",
     "lint": "eslint .",
+    "test": "vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -39,6 +40,7 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
-    "vite": "^5.4.2"
+    "vite": "^5.4.2",
+    "vitest": "^4.1.3"
   }
 }

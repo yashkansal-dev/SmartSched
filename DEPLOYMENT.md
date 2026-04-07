@@ -73,8 +73,8 @@
      ```
      DATABASE_URL=postgresql://...neon...
      SECRET_KEY=your-secure-key
-     GOOGLE_CLIENT_ID=...
-     GOOGLE_CLIENT_SECRET=...
+   VITE_GOOGLE_CLIENT_ID=...
+   GOOGLE_OAUTH_CLIENT_SECRET=...
      ALLOWED_HOSTS=*.render.com,yourdomain.com
      DEBUG=False
      ```
@@ -313,8 +313,8 @@ DATABASE_URL=postgresql://user:password@host:5432/smartsched_db
 CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com,https://frontend-domain.com
 
 # Google OAuth
-GOOGLE_CLIENT_ID=<from Google Cloud Console>
-GOOGLE_CLIENT_SECRET=<from Google Cloud Console>
+VITE_GOOGLE_CLIENT_ID=<from Google Cloud Console>
+GOOGLE_OAUTH_CLIENT_SECRET=<from Google Cloud Console>
 
 # Email (optional, for notifications)
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend

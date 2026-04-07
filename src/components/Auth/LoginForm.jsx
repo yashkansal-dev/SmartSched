@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
+import { isGoogleOAuthConfigured } from '../../utils/auth';
 
 const LoginForm = ({ onSubmit, isLoading, onGoogleSuccess, onGoogleError }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const showGoogleLogin = isGoogleOAuthConfigured(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -44,19 +46,23 @@ const LoginForm = ({ onSubmit, isLoading, onGoogleSuccess, onGoogleError }) => {
           {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
 
-        <p className="auth-form-separator">or continue with Google</p>
+        {showGoogleLogin ? (
+          <>
+            <p className="auth-form-separator">or continue with Google</p>
 
-        <div className="form-google">
-          <GoogleLogin
-            onSuccess={onGoogleSuccess}
-            onError={onGoogleError}
-            theme="outline"
-            size="large"
-            shape="pill"
-            text="continue_with"
-            width="100%"
-          />
-        </div>
+            <div className="form-google">
+              <GoogleLogin
+                onSuccess={onGoogleSuccess}
+                onError={onGoogleError}
+                theme="outline"
+                size="large"
+                shape="pill"
+                text="continue_with"
+                width="100%"
+              />
+            </div>
+          </>
+        ) : null}
       </form>
     </div>
   );

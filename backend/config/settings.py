@@ -3,6 +3,7 @@ Django settings for SmartSched project.
 """
 
 import os
+import sys
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -85,13 +86,30 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # Use dj-database-url to parse DATABASE_URL from environment
-if os.getenv('DATABASE_URL'):
+TESTING = os.getenv('TESTING', 'False') == 'True' or 'test' in sys.argv
+USE_SQLITE = os.getenv('USE_SQLITE', 'True') == 'True'
+
+if TESTING:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+elif os.getenv('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
             conn_max_age=600,
             conn_health_checks=True,
         )
+    }
+elif USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
 else:
     DATABASES = {

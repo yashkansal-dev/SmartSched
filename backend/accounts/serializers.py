@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate
 import google.auth.transport.requests
 from google.oauth2 import id_token
 import os
@@ -53,6 +54,37 @@ class GoogleAuthSerializer(serializers.Serializer):
         )
         
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    """Validate credential-based login using email + password"""
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email', '').strip().lower()
+        password = attrs.get('password')
+
+        if not email or not password:
+            raise serializers.ValidationError('Email and password are required.')
+
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            raise serializers.ValidationError('Invalid email or password.')
+
+        authenticated_user = authenticate(
+            username=user.username,
+            password=password,
+        )
+
+        if not authenticated_user:
+            raise serializers.ValidationError('Invalid email or password.')
+
+        if not authenticated_user.is_active:
+            raise serializers.ValidationError('This account is disabled.')
+
+        attrs['user'] = authenticated_user
+        return attrs
 
 class JWTTokenSerializer(serializers.Serializer):
     """Return JWT tokens for authenticated user"""
